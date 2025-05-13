@@ -34,7 +34,6 @@ exports.handler = async (event) => {
     
     // Prepare the template data
     const templateData = await prepareTemplateData(post, event, navLinks);
-    console.log("templateData", templateData);
     
     // Render the page
     const html = templateEngine.render('post', templateData);

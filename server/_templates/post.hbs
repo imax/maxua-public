@@ -11,7 +11,6 @@
   <link rel="preload" href="/css/main.css?v=1237" as="style">
   <link rel="stylesheet" href="/css/main.css?v=1237">
   
-
   <!-- Prefetch previous and next posts for instant navigation -->
   {{#if navLinks.prevPostId}}
   <link rel="prefetch" href="/p/{{navLinks.prevPostId}}">
@@ -27,8 +26,8 @@
 
     <div class="single-post-container" id="single-post-container">
       {{#with post}}
-        {{#if (eq type 'article' singlePostPage=true )}}
-          {{> post-article}}
+        {{#if (eq type 'article')}}
+          {{> post-article singlePostPage=true }}
         {{else}}
           {{> post-card noLink=true editBtn=true}}
         {{/if}}
