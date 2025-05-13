@@ -1,9 +1,10 @@
 // public/js/app.js
 
 import { isDevBypassEnabled, isAuthenticated } from './auth.js';
-import { log, isDev } from './logger.js';
 
 const ANON_ID_KEY = 'anon_id';
+
+const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
 /**
  * Get or generate anonymous ID for the current user
@@ -80,7 +81,6 @@ function setupTranslationButtons() {
     
     // Hide the button if the content doesn't contain Cyrillic characters
     if (!containsCyrillic(contentElement.textContent)) {
-      //console.log("must be in English!", contentElement.textContent);
       button.style.display = 'none';
       return;
     }
@@ -157,14 +157,14 @@ function initApp() {
   // Enable dev bypass for local development
   if (isDev) {
     localStorage.setItem('microblog_dev_bypass', 'true');
-    log('🔓 Dev bypass enabled');
+    console.log('🔓 Dev bypass enabled');
   }
 
   initAdminProfile();
   setupTranslationButtons();
   
   // Track page view for analytics
-  if (!['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+  if (!isDev) {
     trackPageView(window.location.pathname, getAnonId());
   }
 
