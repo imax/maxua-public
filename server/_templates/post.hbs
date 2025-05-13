@@ -26,9 +26,13 @@
     {{> profile-header activePage="post"}}
 
     <div class="single-post-container" id="single-post-container">
-{{#with post}}
-{{> post-card noLink=true editBtn=true }}
-{{/with}}
+      {{#with post}}
+        {{#if (eq type 'article' singlePostPage=true )}}
+          {{> post-article}}
+        {{else}}
+          {{> post-card noLink=true editBtn=true}}
+        {{/if}}
+      {{/with}}
     </div>
 
     {{#if navLinks}}

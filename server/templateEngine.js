@@ -152,6 +152,7 @@ registerPartial('footer', 'footer');
 registerPartial('email-digest', 'email-digest');
 registerPartial('profile-header', 'profile-header');
 registerPartial('post-card', 'post-card');
+registerPartial('post-article', 'post-article');
 registerPartial('subscription-form', 'subscription-form');
 
 module.exports = {

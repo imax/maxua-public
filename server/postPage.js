@@ -34,6 +34,7 @@ exports.handler = async (event) => {
     
     // Prepare the template data
     const templateData = await prepareTemplateData(post, event, navLinks);
+    console.log("templateData", templateData);
     
     // Render the page
     const html = templateEngine.render('post', templateData);
@@ -67,9 +68,7 @@ function extractPostIdFromPath(path) {
 async function fetchPost(postId) {
   // First, fetch the post with its topic
   const postResult = await pool.query(`
-    SELECT p.*, t.id as topic_id, t.name as topic_name, t.slug as topic_slug 
-    FROM posts p
-    LEFT JOIN topics t ON p.topic_id = t.id
+    SELECT * FROM posts p
     WHERE p.id = $1 AND p.status='public'
   `, [postId]);
   
@@ -137,13 +136,18 @@ async function fetchPrevNextPostIds(currentPostId) {
  */
 async function prepareTemplateData(post, event, navLinks) {
   // Format and process the post content
-  const postContent = linkify(post.content);
+  const postContent = post.content_html || linkify(post.content);
   
-  // Create a clean preview for the title (up to 50 chars)
-  const previewContent = post.content.replace(/\n/g, ' ').trim();
-  const previewTitle = previewContent.length > 50 
-    ? previewContent.substring(0, 47) + '...'
-    : previewContent;
+  let previewTitle;
+  if (post.metadata.title) {
+    previewTitle = post.metadata.title;
+  } else {
+    // Create a clean preview for the title (up to 50 chars)
+    const previewContent = post.content.replace(/\n/g, ' ').trim();
+    previewTitle = previewContent.length > 50 
+      ? previewContent.substring(0, 47) + '...'
+      : previewContent;
+  }
 
   // Fetch pinned comments
   const commentsQuery = `

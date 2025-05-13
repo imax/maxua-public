@@ -1,0 +1,19 @@
+<div class="article-container" data-post-id="{{id}}">
+  {{#if metadata.title}}
+    <h2 class="article-title">{{metadata.title}}</h2>
+  {{/if}}
+  
+  <div class="article-meta">
+    Published on <span class="article-date">{{formatted_date}}</span>
+  </div>
+  
+  {{#if metadata.image_url}}
+    <div class="article-featured-image">
+      <img src="{{metadata.image_url}}" alt="{{metadata.title}}">
+    </div>
+  {{/if}}
+  
+  <div class="article-content">
+    {{{content_html}}}
+  </div>
+</div>
