@@ -109,6 +109,10 @@ async function sendDailyDigest(options = {}) {
 
     // Sanitize subject line - remove any newlines and excessive whitespace
     subjectLine = subjectLine.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+
+    // Some extra magic
+    const specialEmail = process.env.SOMEONE_SPECIAL_EMAIL;
+    const specialGreeting = process.env.SOMEONE_SPECIAL_GREETING;
     
     // Check if this digest was already sent today
     if (!dryRun && !testEmail) {
@@ -169,9 +173,11 @@ async function sendDailyDigest(options = {}) {
       const emailBatch = batchSubscribers.map(subscriber => {
         // Unsubscribe URL is unique to each subscriber (email)
         const unsubscribeUrl = `https://maxua.com/api/unsubscribe?token=${subscriber.unsubscribe_token}`;
-        
-        let someone_special = subscriber.email === 'julia.ishchenko@gmail.com';
-        if (testEmail) someone_special = testEmail; // over-ride for testing
+
+        let someone_special = null;
+        if (specialEmail && specialGreeting && subscriber.email === specialEmail) {
+          someone_special = specialGreeting;
+        }
 
         // Render the email -- do it for each subscriber to catch someone_special
         // Also: replaces unsubscribeUrl placeholder with an actual link

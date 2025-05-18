@@ -17,11 +17,7 @@
 <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #222; text-align: left;">
 
   <div style="font-style: italic; font-size: 0.9rem; color: #555; margin: 1rem 0;">
-    {{#if someone_special}}
-    Привіт, сонечко!
-
-    Цей дайджест спеціально для тебе :-*
-    <br><br>
+    {{#if someone_special}}{{{someone_special}}}
     {{else}}
      Дайджест блога <a
       href="https://maxua.com/">maxua.com</a> за {{dateFormatted}}. Enjoy
