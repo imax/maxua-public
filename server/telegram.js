@@ -63,9 +63,30 @@ async function sharePostToTelegram(post) {
 
   // Format the post content for Telegram
   const postUrl = `https://maxua.com${getPostPermalink(post)}`;
+
+  let content = post.content;
+
+  // Check if post has metadata URL
+  if (post.metadata) {
+    // Handle case when metadata is a JSON string
+    let metadata = post.metadata;
+    if (typeof post.metadata === 'string') {
+      try {
+        metadata = JSON.parse(post.metadata);
+      } catch (e) {
+        console.warn('Failed to parse metadata JSON:', e);
+      }
+    }
+    
+    // Check if metadata contains a URL that's not already in the content
+    if (metadata.url && !content.includes(metadata.url)) {
+      // Append the URL to the content
+      content += `\n\n${metadata.url}`;
+    }
+  }
   
   // Escape any HTML in the content (but preserve line breaks)
-  const escapedContent = post.content
+  const escapedContent = content
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
@@ -75,7 +96,7 @@ async function sharePostToTelegram(post) {
 
   // Add post link at the end
   message += `\n\n<b>${postUrl}</b>`;
-  
+
   // Send to Telegram
   const result = await sendTelegramMessage(message);
 

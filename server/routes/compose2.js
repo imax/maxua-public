@@ -4,7 +4,8 @@ const router = express.Router();
 const { pool, authMiddleware, generateSlug } = require('../utils');
 const templateEngine = require('../templateEngine');
 const { sharePostToTelegram } = require('../telegram');
-const { sharePostToBluesky, fetchUrlMetadata } = require('../bluesky');
+const { sharePostToBluesky } = require('../bluesky');
+const fetch = require('node-fetch');
 
 // Display the compose page - updated to support editing mode
 router.get('/', authMiddleware, async (req, res) => {
@@ -278,5 +279,71 @@ router.post('/post', authMiddleware, async (req, res) => {
     return res.status(500).json({ error: 'Server error', details: error.message });
   }
 });
+
+/**
+ * Fetch metadata from a URL for rich embeds
+ *
+ * @param {string} url - The URL to fetch metadata from
+ * @returns {Promise<Object|null>} - Object with title, description, and image URL
+ */
+async function fetchUrlMetadata(url) {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'MaxUA-Microblog/1.0'
+      },
+      timeout: 5000 // 5 second timeout
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch URL: ${response.status}`);
+    }
+    
+    const html = await response.text();
+    
+    // Extract Open Graph and basic meta tags
+    const metadata = {
+      title: extractMetaTag(html, 'og:title') || extractMetaTag(html, 'twitter:title') || extractTitle(html) || url,
+      description: extractMetaTag(html, 'og:description') || extractMetaTag(html, 'twitter:description') || extractMetaTag(html, 'description') || '',
+      image: extractMetaTag(html, 'og:image') || extractMetaTag(html, 'twitter:image') || null
+    };
+    
+    return metadata;
+  } catch (error) {
+    console.warn(`Error fetching metadata for ${url}:`, error);
+    return null;
+  }
+}
+
+/**
+ * Extract meta tag content from HTML
+ *
+ * @param {string} html - The HTML to parse
+ * @param {string} name - The meta tag name or property
+ * @returns {string|null} - The content of the meta tag or null
+ */
+function extractMetaTag(html, name) {
+  const ogMatch = html.match(new RegExp(`<meta[^>]*(?:property|name)=["']${name}["'][^>]*content=["']([^"']*)["']`, 'i'));
+  const ogMatchReverse = html.match(new RegExp(`<meta[^>]*content=["']([^"']*)["'][^>]*(?:property|name)=["']${name}["']`, 'i'));
+  
+  if (ogMatch && ogMatch[1]) {
+    return ogMatch[1];
+  } else if (ogMatchReverse && ogMatchReverse[1]) {
+    return ogMatchReverse[1];
+  }
+  
+  return null;
+}
+
+/**
+ * Extract title from HTML
+ *
+ * @param {string} html - The HTML to parse
+ * @returns {string|null} - The title tag content or null
+ */
+function extractTitle(html) {
+  const titleMatch = html.match(/<title[^>]*>([^<]*)<\/title>/i);
+  return titleMatch ? titleMatch[1].trim() : null;
+}
 
 module.exports = router;
