@@ -48,12 +48,6 @@ async function sharePostToBluesky(post) {
       } else {
         postMetadata = post.metadata;
       }
-      
-      // Check if metadata contains a URL that's not already in the content
-      if (postMetadata.url && !content.includes(postMetadata.url)) {
-        // Append the URL to the content
-        content += `\n\n${postMetadata.url}`;
-      }
     }
     
     // Create the facets for rich text features (links, mentions, etc)
