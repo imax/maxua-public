@@ -257,8 +257,15 @@ router.post('/post', authMiddleware, async (req, res) => {
         // Share to Bluesky if enabled
         if (shareBluesky) {
           try {
-            await sharePostToBluesky(post);
-            console.log(`Post ${post.id} shared to Bluesky`);
+            const blueskyResult = await sharePostToBluesky(post);
+            console.log(`Post ${post.id} shared to Bluesky: ${blueskyResult}`);
+            // we also store bsky post ID for future references;
+            if (blueskyResult.success && blueskyResult.postId) {
+              await client.query(`
+  UPDATE posts
+  SET metadata = jsonb_set(metadata, '{bluesky_post_id}', to_jsonb($1::text), true)
+  WHERE id = $2`, [blueskyResult.postId, post.id]);
+            }
           } catch (blueskyError) {
             console.error('Error sharing to Bluesky:', blueskyError);
           }

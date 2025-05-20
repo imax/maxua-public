@@ -116,10 +116,19 @@ async function sharePostToBluesky(post) {
 
     // Create the post with the rich text and embed
     const postResult = await agent.post(postRecord);
+
+    // Extract the post ID from the URI
+    const postUri = postResult.uri;
+    let postId = null;
+    if (typeof postUri === 'string' && postUri.includes('/')) {
+      const parts = postUri.split('/');
+      postId = parts[parts.length - 1] || null;
+    }
     
     return {
       success: true,
-      postUri: postResult.uri
+      postUri: postUri,
+      postId: postId
     };
   } catch (error) {
     console.error('Error sharing to Bluesky:', error);
