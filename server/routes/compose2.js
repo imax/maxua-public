@@ -258,7 +258,7 @@ router.post('/post', authMiddleware, async (req, res) => {
         if (shareBluesky) {
           try {
             const blueskyResult = await sharePostToBluesky(post);
-            console.log(`Post ${post.id} shared to Bluesky: ${blueskyResult}`);
+            console.log(`Post ${post.id} shared to Bluesky`);
             // we also store bsky post ID for future references;
             if (blueskyResult.success && blueskyResult.postId) {
               await client.query(`
