@@ -1,6 +1,7 @@
 // Enhanced public/js/compose2.js with URL detection for rich embeds
 function composeApp() {
     return {
+        ...composeDraftsModule(),
         content: '',
         metadata: {},       // Stores fields with key and value properties
         submitting: null,   // null, 'draft', or 'published'
@@ -8,12 +9,8 @@ function composeApp() {
         statusType: '',
         shareTelegram: true,
         shareBluesky: true,
-        drafts: [],
-        loadingDrafts: false,
-        currentDraftId: null,
         isEditMode: false,
         editPostId: null,
-        deletingDraft: null, // Track which draft is being deleted to prevent double deletion
         
         // Track processed URLs to avoid redundant API calls
         processedUrls: {},
@@ -49,10 +46,7 @@ function composeApp() {
                 }
             });
             
-            // Load drafts on page load (but not in edit mode)
-            if (!this.isEditMode) {
-                await this.loadDrafts();
-            }
+            await this.initDrafts();
         },
 
         // Handle content changes with URL detection
@@ -247,103 +241,6 @@ function composeApp() {
             delete this.metadata[id];
         },
         
-        // Load drafts from server
-        async loadDrafts() {
-            if (this.loadingDrafts || this.isEditMode) return;
-            this.loadingDrafts = true;
-            
-            try {
-                const response = await fetch('/compose/drafts', {
-                    credentials: 'include'
-                });
-                
-                if (response.ok) {
-                    this.drafts = await response.json();
-                } else {
-                    console.error('Failed to load drafts');
-                }
-            } catch (error) {
-                console.error('Error loading drafts:', error);
-            } finally {
-                this.loadingDrafts = false;
-            }
-        },
-        
-        // Select and load a draft
-        selectDraft(draft) {
-            if (this.isEditMode) return; // Don't allow selecting drafts in edit mode
-            
-            this.content = draft.content;
-            this.currentDraftId = draft.id;
-            
-            // Clear existing metadata
-            this.metadata = {};
-            
-            // Load metadata if it exists
-            if (draft.metadata && typeof draft.metadata === 'object') {
-                // Convert flat metadata object to our structure with id keys
-                Object.entries(draft.metadata).forEach(([key, value]) => {
-                    const id = Date.now() + Math.random().toString().slice(2, 8);
-                    this.metadata[id] = { key, value };
-                });
-                
-                // If there's a URL in metadata, mark it as processed
-                if (draft.metadata.url) {
-                    this.processedUrls[draft.metadata.url] = 'completed';
-                }
-            }
-            
-            // Trigger input event to resize textarea
-            const textarea = document.querySelector('.compose-textarea');
-            if (textarea) {
-                textarea.style.height = 'auto';
-                textarea.style.height = Math.min(textarea.scrollHeight, 600) + 'px';
-
-                // Scroll to textarea with smooth behavior
-                textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                textarea.focus();
-            }
-        },
-
-        async deleteDraft(draftId) {
-            if (!draftId) return;
-            
-            try {
-                // Stop propagation and prevent default form submission if called from an event
-                if (event) {
-                    event.stopPropagation();
-                    event.preventDefault();
-                }
-                
-                // Check if already deleting this draft
-                if (this.deletingDraft === draftId) return;
-                this.deletingDraft = draftId;
-                
-                const response = await fetch(`/compose/drafts/${draftId}`, {
-                    method: 'DELETE',
-                    credentials: 'include'
-                });
-                
-                if (response.ok) {
-                    // Remove from local drafts array
-                    this.drafts = this.drafts.filter(draft => draft.id !== draftId);
-                    this.showStatus("Draft deleted", "success");
-                    
-                    // Clear current draft if it was the one deleted
-                    if (this.currentDraftId === draftId) {
-                        this.resetForm();
-                    }
-                } else {
-                    this.showStatus("Failed to delete draft", "error");
-                }
-            } catch (error) {
-                console.error('Error deleting draft:', error);
-                this.showStatus("Error deleting draft", "error");
-            } finally {
-                this.deletingDraft = null;
-            }
-        },
-                
         // Submit post (handles both draft and publish, as well as editing)
         async submitPost(status) {
             if (this.submitting) return; // Prevent double submission
