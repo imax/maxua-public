@@ -76,6 +76,9 @@ app.use('/', feedsRoutes); // Will handle /rss
 const compose2Routes = require('./routes/compose2');
 app.use('/compose', compose2Routes);
 
+const articleRoutes = require('./routes/article');
+app.use('/article', articleRoutes);
+
 // STATIC paths - from Netlify
 const path = require('path');
 

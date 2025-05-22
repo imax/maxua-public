@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{pageTitle}}</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/compose2.css">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body>
+    <main>
+        {{> profile-header activePage="article"}}
+
+        <div class="compose-container" x-data="articleApp()">
+            <div class="compose-card">
+                <div class="compose-header">
+                    <h2 class="compose-title">Write Article</h2>
+                    <p class="compose-subtitle">Create a longer-form post with markdown support</p>
+                </div>
+                
+                <form @submit.prevent="submitArticle()">
+                    <!-- Title Field -->
+                    <input type="text" 
+                           x-model="title"
+                           class="article-title-input"
+                           placeholder="Article title..."
+                           autofocus>
+
+                    <!-- Content Area -->
+                    <div class="content-container">
+                        <!-- Editor -->
+                        <textarea x-show="!showPreview"
+                                  x-model="content"
+                                  class="article-content-textarea"
+                                  placeholder="Write your article in markdown...
+
+# Heading 1
+## Heading 2
+
+**Bold text** and *italic text*
+
+- List item 1
+- List item 2
+
+[Link text](https://example.com)
+
+```
+Code block
+```"></textarea>
+
+                        <!-- Preview -->
+                        <div x-show="showPreview" 
+                             class="article-preview"
+                             x-html="renderedContent"></div>
+                    </div>
+
+                    <!-- Button Row -->
+                    <div class="button-row">
+                        <div class="button-group-left">
+                            <button type="button" 
+                                    @click="showPreview = !showPreview"
+                                    class="preview-toggle"
+                                    :class="{ 'active': showPreview }">
+                                <span x-text="showPreview ? 'Edit' : 'Preview'"></span>
+                            </button>
+                        </div>
+                        <div class="button-group-right">
+                            <button type="submit" 
+                                    :disabled="submitting || !title.trim() || !content.trim()" 
+                                    class="post-button">
+                                <span x-text="submitting ? 'Publishing...' : 'Publish Article'"></span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Status Message -->
+                    <div x-show="statusMessage !== ''" 
+                         x-text="statusMessage" 
+                         :class="`status-message status-${statusType}`"
+                         x-transition>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.0.0/dist/markdown-it.min.js"></script>
+    <script src="/js/article-compose.js"></script>
+</body>
+</html>
