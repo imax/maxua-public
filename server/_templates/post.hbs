@@ -20,9 +20,9 @@
     <div class="single-post-container" id="single-post-container">
       {{#with post}}
         {{#if (eq type 'article')}}
-          {{> post-article singlePostPage=true }}
+{{> post-article singlePostPage=true }}
         {{else}}
-          {{> post-card singlePostPage=true}}
+{{> post-card singlePostPage=true}}
         {{/if}}
       {{/with}}
     </div>
