@@ -182,7 +182,11 @@ async function prepareTemplateData(post, event, navLinks) {
   
   // Build the full canonical URL
   const domain = 'https://maxua.com';
-  const canonicalUrl = `${domain}/p/${post.id}`;
+  const canonicalUrl = `${domain}/p/${post.slug}-${post.id}`;
+
+  const metadata = typeof post.metadata === 'string'
+    ? JSON.parse(post.metadata)
+    : post.metadata;
   
   // Generate meta tags for SEO
   const metaTags = generateMetaTags({
@@ -192,12 +196,13 @@ async function prepareTemplateData(post, event, navLinks) {
     type: 'article',
     publishedTime: post.created_at,
     modifiedTime: post.created_at,
+    image: metadata?.og_image,
     // Add topic as a keyword if available
     keywords: post.topic_name 
       ? `${post.topic_name}, startups, tech, Max Ischenko` 
       : 'startups, tech, Max Ischenko'
   });
-  
+
   // Generate breadcrumb structured data
   const breadcrumbItems = [
     { name: 'Home', url: '/' },
