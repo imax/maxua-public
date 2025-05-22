@@ -22,7 +22,7 @@
         {{#if (eq type 'article')}}
           {{> post-article singlePostPage=true }}
         {{else}}
-          {{> post-card noLink=true editBtn=true}}
+          {{> post-card singlePostPage=true}}
         {{/if}}
       {{/with}}
     </div>

@@ -1,5 +1,5 @@
 <div class="post-card" data-post-id="{{id}}">
-  {{#if noLink}}
+  {{#if singlePostPage}}
     <div class="post-content">{{{content_html}}}</div>
   {{else}}
     <a href="{{permalink this}}" class="post-card-link">
@@ -39,7 +39,7 @@
     <div class="post-date">
       <span class="post-date-text">{{formatted_date}}</span>
       <a href="#" class="translate-link" data-post-id="{{id}}" data-translated="false">Translate</a>
-  {{#if editBtn}}
+  {{#if singlePostPage}}
       <span x-data="{ isAdmin: false }" x-init="isAdmin = localStorage.getItem('microblog_auth') !== null">
         <a x-show="isAdmin" href="/compose?edit={{id}}" class="edit-link">Edit</a>
       </span>
