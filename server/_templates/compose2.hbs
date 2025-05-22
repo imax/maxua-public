@@ -21,8 +21,10 @@
               <div class="compose-header">
                 <h2 class="compose-title">
                   <span x-text="isEditMode ? 'Edit post' : 'Compose a new post'"></span>
+                  <a href="/article">+Article</a>
                 </h2>
-                <p class="compose-subtitle" x-text="isEditMode ? 'Update your post - editing will not change the original publish date' : 'Share your thoughts, ideas, or updates'"></p>
+                <p class="compose-subtitle" x-text="isEditMode ? 'Update your post - editing will not change the original publish date' : 'Share your thoughts, ideas, or updates'">
+                </p>
               </div>
                 
                 <form id="compose-form" @submit.prevent="submitPost('published')">
