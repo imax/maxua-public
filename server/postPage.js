@@ -4,8 +4,6 @@ const templateEngine = require('./templateEngine');
 const { 
   generateMetaTags,
   generateBlogPostSchema,
-  generateBreadcrumbsSchema,
-  generatePersonSchema,
   extractDescription
 } = require('./seo');
 
@@ -203,30 +201,9 @@ async function prepareTemplateData(post, event, navLinks) {
       : 'startups, tech, Max Ischenko'
   });
 
-  // Generate breadcrumb structured data
-  const breadcrumbItems = [
-    { name: 'Home', url: '/' },
-    { name: previewTitle, url: `/p/${post.id}` }
-  ];
-  
-  // If post has a topic, add it to breadcrumbs
-  if (post.topic_name && post.topic_slug) {
-    breadcrumbItems.splice(1, 0, { 
-      name: post.topic_name, 
-      url: `/t/${post.topic_slug}` 
-    });
-  }
-  
   // Generate structured data for this post
   const structuredData = [
     generateBlogPostSchema(post, domain),
-    generateBreadcrumbsSchema(breadcrumbItems, domain),
-    generatePersonSchema({
-      sameAs: [
-        'https://www.linkedin.com/in/maksim/',
-        // Add your other profiles here
-      ]
-    })
   ].join('\n');
   
   return {
