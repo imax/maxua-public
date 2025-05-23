@@ -36,7 +36,7 @@ async function sharePostToBluesky(post) {
     let content = post.content;
     let postMetadata = null;
     
-    // Check if post has metadata with URL
+    // Check if post has metadata
     if (post.metadata) {
       // Handle case when metadata is a JSON string
       if (typeof post.metadata === 'string') {
@@ -64,8 +64,44 @@ async function sharePostToBluesky(post) {
       postRecord.facets = facets;
     }
 
-    // Create rich embed directly from post metadata if available
-    if (postMetadata && postMetadata.url && postMetadata.title) {
+    // Handle post images (authored content)
+    if (postMetadata && postMetadata.post_image) {
+      try {
+        // Fetch the image
+        const imageResponse = await fetch(postMetadata.post_image, {
+          headers: { 'User-Agent': 'MaxUA-Microblog/1.0' },
+          timeout: 10000
+        });
+        
+        if (imageResponse.ok) {
+          // Get the image as a buffer
+          const imageBuffer = await imageResponse.buffer();
+          
+          // Upload the image
+          const upload = await agent.uploadBlob(imageBuffer, {
+            encoding: 'image/jpeg' // Using JPEG as a safe default
+          });
+          
+          if (upload && upload.data && upload.data.blob) {
+            // Create image embed
+            postRecord.embed = {
+              $type: 'app.bsky.embed.images',
+              images: [{
+                alt: '', // Empty alt text as these are my authored images
+                image: upload.data.blob
+              }]
+            };
+          }
+        }
+      } catch (imageError) {
+        console.error('Error uploading post image:', imageError);
+        throw new Error(`Failed to upload post image: ${imageError.message}`);
+      }
+    }
+    
+    // Handle rich link embeds (only if no post image)
+    // Note: Bluesky doesn't support multiple embed types in one post
+    if (!postRecord.embed && postMetadata && postMetadata.url && postMetadata.title) {
       try {
         // Create basic embed without image first
         const embed = {
@@ -77,7 +113,7 @@ async function sharePostToBluesky(post) {
           }
         };
         
-        // If we have an image URL, try to upload it
+        // If we have an image URL for the link, try to upload it
         if (postMetadata.image_url) {
           try {
             // Fetch the image
@@ -101,7 +137,7 @@ async function sharePostToBluesky(post) {
               }
             }
           } catch (imageError) {
-            console.warn('Error uploading image, continuing without thumbnail:', imageError.message);
+            console.warn('Error uploading link preview image, continuing without thumbnail:', imageError.message);
             // Continue without the image
           }
         }

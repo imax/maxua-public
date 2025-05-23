@@ -51,6 +51,51 @@ async function sendTelegramMessage(text, options = {}) {
 }
 
 /**
+ * Send a photo to Telegram
+ * 
+ * @param {string} photo - The photo URL
+ * @param {string} caption - The photo caption
+ * @param {Object} options - Additional Telegram API options
+ * @returns {Promise<Object>} - The Telegram API response
+ */
+async function sendTelegramPhoto(photo, caption, options = {}) {
+  if (!TELEGRAM_BOT_TOKEN) {
+    throw new Error('TELEGRAM_BOT_TOKEN is not set');
+  }
+
+  const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`;
+  
+  const payload = {
+    chat_id: TELEGRAM_CHANNEL_ID,
+    photo,
+    caption,
+    parse_mode: 'HTML',
+    ...options
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Telegram API error:', errorText);
+      throw new Error(`Telegram API returned ${response.status}: ${errorText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error sending photo to Telegram:', error);
+    throw error;
+  }
+}
+
+/**
  * Share a blog post to Telegram
  * 
  * @param {Object} post - The post object to share
@@ -66,7 +111,7 @@ async function sharePostToTelegram(post) {
 
   let content = post.content;
 
-  // Check if post has metadata URL
+  // Check if post has metadata URL (but not post_image)
   if (post.metadata) {
     // Handle case when metadata is a JSON string
     let metadata = post.metadata;
@@ -97,15 +142,29 @@ async function sharePostToTelegram(post) {
   // Add post link at the end
   message += `\n\n<b>${postUrl}</b>`;
 
-  // Send to Telegram
-  const result = await sendTelegramMessage(message);
+  // Check if post has an image
+  let metadata = post.metadata;
+  if (typeof post.metadata === 'string') {
+    try {
+      metadata = JSON.parse(post.metadata);
+    } catch (e) {
+      metadata = {};
+    }
+  }
 
-  // result.result?.message_id -- in case we want to store it in out db
-  
-  return result;
+  if (metadata && metadata.post_image) {
+    // Send as photo with caption
+    const result = await sendTelegramPhoto(metadata.post_image, message);
+    return result;
+  } else {
+    // Send as regular message
+    const result = await sendTelegramMessage(message);
+    return result;
+  }
 }
 
 module.exports = {
   sendTelegramMessage,
+  sendTelegramPhoto,
   sharePostToTelegram
 };
