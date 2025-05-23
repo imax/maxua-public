@@ -194,7 +194,7 @@ async function prepareTemplateData(post, event, navLinks) {
     type: 'article',
     publishedTime: post.created_at,
     modifiedTime: post.created_at,
-    image: metadata?.og_image,
+    image: metadata?.post_image || metadata?.og_image,
     // Add topic as a keyword if available
     keywords: post.topic_name 
       ? `${post.topic_name}, startups, tech, Max Ischenko` 
