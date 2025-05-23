@@ -367,7 +367,9 @@ async function promptForSubject(posts) {
     
     // Display options based on post preview texts
     posts.forEach((post, index) => {
-      console.log(`${index + 1}: ${post.preview_text || post.content.substring(0, 40)}`);
+      let subj = post.preview_text || post.content.substring(0, 40);
+      subj = subj.replace(/[\r\n]+/g, ' ').trim();
+      console.log(`${index + 1}: ${subj}`);
     });
     
     rl.question('\nEnter number OR custom subject line: ', (answer) => {
