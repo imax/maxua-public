@@ -7,8 +7,6 @@ const {
   extractDescription
 } = require('./seo');
 
-console.log("postPage loaded");
-
 /**
  * Handler for post page requests
  */
