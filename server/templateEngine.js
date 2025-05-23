@@ -2,12 +2,21 @@
 const fs = require('fs');
 const path = require('path');
 const Handlebars = require('handlebars');
+const MarkdownIt = require('markdown-it');
 const { isDevEnvironment, formatDate, pool } = require('./utils');
 
 // Cache for compiled templates
 const templateCache = {};
 
 const TEMPLATES_DIR = path.join(__dirname, '_templates'); 
+
+// Initialize markdown-it with same options as article compose
+const md = new MarkdownIt({
+  html: false,        // Disable HTML tags in source
+  breaks: true,       // Convert '\n' in paragraphs into <br>
+  linkify: true,      // Autoconvert URL-like text to links
+  typographer: true   // Enable some language-neutral replacement + quotes beautification
+});
 
 // Skip cache if we're in local development mode
 const isDev = isDevEnvironment();
@@ -102,8 +111,24 @@ Handlebars.registerHelper('neq', function (a, b, options) {
   return a != b;
 });
 
+Handlebars.registerHelper('markdownToHtml', function(content) {
+   return content ? md.render(content) : '';
+ });
+ 
+Handlebars.registerHelper('substring', function(str, start, end) {
+  return str ? str.substring(start, end) : '';
+});
+
+Handlebars.registerHelper('gt', function(a, b) {
+  return a > b;
+});
+
 Handlebars.registerHelper('json', function(context) {
   return JSON.stringify(context);
+});
+
+Handlebars.registerHelper('markdownToHtml', function(content) {
+  return content ? md.render(content) : '';
 });
 
 // QOTD feature

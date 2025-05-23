@@ -13,7 +13,9 @@
     <img src="{{metadata.post_image}}" style="max-height: 200px" />
     </div>
     {{/if}}
-      <div class="post-content">{{{content_html}}}</div>
+      <div class="post-content">{{#if (eq type 'article')}}<div
+           class="article-preview-content">{{{preview_text}}}</div><div
+class="article-continue-reading">{{ metadata.title }} →</div>{{else}}{{{content_html}}}{{/if}}</div>
     </a>
   {{/if}}
 
