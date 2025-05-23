@@ -8,7 +8,12 @@
     <div class="post-content">{{{content_html}}}</div>
   {{else}}
     <a href="{{permalink this}}" class="post-card-link">
-      <div class="post-content">{{{content_html}}}{{#if metadata.post_image}} 📸{{/if}}</div>
+    {{#if metadata.post_image}}
+    <div class="post-image-container">
+    <img src="{{metadata.post_image}}" style="max-height: 200px" />
+    </div>
+    {{/if}}
+      <div class="post-content">{{{content_html}}}</div>
     </a>
   {{/if}}
 
