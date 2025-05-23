@@ -134,10 +134,11 @@ router.post('/post', authMiddleware, async (req, res) => {
     const metadata_json = JSON.stringify(validatedMetadata);
 
     // Prepare post preview text
-    const previewText = content.length > 40 
+    let previewText = content.length > 40 
       ? content.substring(0, content.lastIndexOf(' ', 37) || 37) + '..'
       : content;
     
+    previewText = previewText.replace(/[\r\n]+/g, ' ').trim();
     const slug = await generateSlug(previewText);
 
     // Start a transaction
