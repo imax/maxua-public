@@ -343,6 +343,40 @@ input:checked + .toggle-slider:before {
     font-weight: 400;
 }
 
+/* Article Options styling */
+
+.metadata-label {
+  display: block;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 0.25rem;
+}
+
+.metadata-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+.metadata-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
+}
+
+/* Override the flex layout for article options */
+.metadata-section .metadata-field {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.metadata-section .metadata-field:last-child {
+  margin-bottom: 0;
+}
+
 /* Preview toggle - reuse existing button-row styling */
 .preview-toggle {
     background-color: #f5f5f5;

@@ -39,6 +39,8 @@ router.get('/', authMiddleware, async (req, res) => {
           id: post.id,
           title: metadata.title || '',
           content: post.content || '',
+          slug: post.slug || '',
+          previewText: post.preview_text || '',
           created_at: post.created_at
         };
       } else {
@@ -62,7 +64,7 @@ router.get('/', authMiddleware, async (req, res) => {
 // Publish article - now handles both create and update
 router.post('/publish', authMiddleware, async (req, res) => {
   try {
-    const { title, content, editPostId } = req.body;
+    const { title, content, editPostId, slug, previewText } = req.body;
     
     // Basic validation
     if (!title || title.trim() === '') {
@@ -78,13 +80,13 @@ router.post('/publish', authMiddleware, async (req, res) => {
       title: title.trim()
     };
 
-    // Generate preview text from title (first 40 chars)
-    const previewText = title.length > 40 
+    // Generate preview text from title (first 40 chars) or use provided
+    const finalPreviewText = previewText || (title.length > 40 
       ? title.substring(0, title.lastIndexOf(' ', 37) || 37) + '..'
-      : title;
+      : title);
     
-    // Generate slug from title
-    const slug = await generateSlug(title);
+    // Generate slug from title or use provided
+    const finalSlug = slug || await generateSlug(title);
 
     let article;
     
@@ -95,7 +97,7 @@ router.post('/publish', authMiddleware, async (req, res) => {
          SET content = $1, preview_text = $2, slug = $3, metadata = $4, updated_at = NOW()
          WHERE id = $5 AND status = 'public' AND type = 'article'
          RETURNING *`, 
-        [content.trim(), previewText, slug, JSON.stringify(metadata), editPostId]
+        [content.trim(), finalPreviewText, finalSlug, JSON.stringify(metadata), editPostId]
       );
 
       if (result.rows.length === 0) {
@@ -110,7 +112,7 @@ router.post('/publish', authMiddleware, async (req, res) => {
          (content, preview_text, slug, status, type, metadata) 
          VALUES ($1, $2, $3, 'public', 'article', $4) 
          RETURNING *`, 
-        [content.trim(), previewText, slug, JSON.stringify(metadata)]
+        [content.trim(), finalPreviewText, finalSlug, JSON.stringify(metadata)]
       );
 
       if (result.rows.length === 0) {

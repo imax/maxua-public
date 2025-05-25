@@ -3,6 +3,8 @@ function articleApp() {
     return {
         title: '',
         content: '',
+        slug: '',
+        previewText: '',
         showPreview: false,
         submitting: false,
         statusMessage: '',
@@ -62,6 +64,8 @@ function articleApp() {
                 // Set fields
                 this.title = articleData.title || '';
                 this.content = articleData.content || '';
+                this.slug = articleData.slug || '';
+                this.previewText = articleData.preview_text || ''; // Note: preview_text with underscore
 
                 console.log('Initialized edit mode for article:', articleData.id);
             } catch (error) {
@@ -102,7 +106,9 @@ function articleApp() {
             try {
                 const body = {
                     title: this.title.trim(),
-                    content: this.content.trim()
+                    content: this.content.trim(),
+                    slug: this.slug.trim() || null, // Send null if empty to auto-generate
+                    previewText: this.previewText.trim() || null // Send null if empty to auto-generate
                 };
 
                 // Add edit post ID if we're editing
