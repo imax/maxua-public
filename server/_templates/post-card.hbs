@@ -49,6 +49,9 @@ class="article-continue-reading">{{ metadata.title }} →</div>{{else}}{{{conten
 
   <div class="post-meta">
     <div class="post-date">
+      {{#unless (eq type "text")}}
+      <span class="post-type">{{capitalize type}}&nbsp;</span>
+      {{/unless}}
       <span class="post-date-text">{{formatDate created_at}}</span>
       <a href="#" class="translate-link" data-post-id="{{id}}" data-translated="false">Translate</a>
   {{#if singlePostPage}}

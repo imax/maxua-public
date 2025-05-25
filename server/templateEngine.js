@@ -127,6 +127,12 @@ Handlebars.registerHelper('markdownToHtml', function(content) {
   return content ? md.render(content) : '';
 });
 
+Handlebars.registerHelper('capitalize', function(str) {
+  if (typeof str !== 'string') return '';
+  return str.charAt(0).toUpperCase() + str.slice(1);
+});
+
+
 Handlebars.registerHelper('formatDate', function(dateStr, style) {
   // Handle both single argument (dateStr) and two arguments (dateStr, style)
   if (typeof style === 'object') {

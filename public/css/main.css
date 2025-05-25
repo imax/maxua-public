@@ -850,17 +850,6 @@ footer a:hover {
   color: var(--color-text);
 }
 
-.post-type-indicator {
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.8rem;
-  font-weight: 500;
-  border-radius: 4px;
-  background-color: #e8f0fe;
-  color: var(--color-accent);
-  margin-bottom: 0.75rem;
-}
-
 /* Pinned comments styles */
 .pinned-comments-section {
   margin-top: 2rem;
