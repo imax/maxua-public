@@ -4,7 +4,6 @@ const router = express.Router();
 const { pool, authMiddleware, generateSlug } = require('../utils');
 const templateEngine = require('../templateEngine');
 
-// Display the article compose page - now supports editing
 router.get('/', authMiddleware, async (req, res) => {
   try {
     // Check if editing an existing article
@@ -14,7 +13,7 @@ router.get('/', authMiddleware, async (req, res) => {
     
     if (editPostId) {
       const result = await pool.query(
-        `SELECT id, content, metadata, created_at 
+        `SELECT id, content, metadata, slug, preview_text, created_at 
          FROM posts 
          WHERE id = $1 AND status = 'public' AND type = 'article'`,
         [editPostId]
@@ -39,8 +38,8 @@ router.get('/', authMiddleware, async (req, res) => {
           id: post.id,
           title: metadata.title || '',
           content: post.content || '',
-          slug: post.slug || '',
-          previewText: post.preview_text || '',
+          slug: post.slug || '', // Include the actual slug from DB
+          preview_text: post.preview_text || '', // Include actual preview_text from DB
           created_at: post.created_at
         };
       } else {
@@ -60,6 +59,7 @@ router.get('/', authMiddleware, async (req, res) => {
     res.status(500).send(`<h1>500 - Server Error</h1><p>${error.message}</p>`);
   }
 });
+
 
 // Publish article - now handles both create and update
 router.post('/publish', authMiddleware, async (req, res) => {

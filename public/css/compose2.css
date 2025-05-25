@@ -427,6 +427,12 @@ input:checked + .toggle-slider:before {
     box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
 }
 
+
+/* override for previewText textarea */
+.metadata-input[x-model="previewText"] {
+    font-family: var(--font-family);
+}
+
 /* Article preview */
 .article-preview {
     min-height: 400px;

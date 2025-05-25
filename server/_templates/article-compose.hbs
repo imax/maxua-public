@@ -63,12 +63,12 @@ Code block
                     <!-- Options Section -->
                     <div class="metadata-section" 
                          x-data="{ expanded: false }">
-                        <div class="metadata-header">
-                            <span @click="expanded = !expanded;" class="metadata-toggle">
-                                <span x-text="expanded ? '▼' : '▶'"></span> 
-                                Options
-                            </span>
-                        </div>
+                      <div class="metadata-header" @click="expanded = !expanded;">
+                        <span class="metadata-toggle">
+                          <span x-text="expanded ? '▼' : '▶'"></span> 
+                          Options
+                        </span>
+                      </div>
                         
                         <div class="metadata-content" x-show="expanded" x-transition>
                             <div class="metadata-field">
@@ -81,10 +81,10 @@ Code block
                             
                             <div class="metadata-field">
                                 <label class="metadata-label">Preview Text</label>
-                                <input type="text" 
-                                       x-model="previewText" 
-                                       placeholder="Auto-generated from title" 
-                                       class="metadata-input">
+                                <textarea x-model="previewText" 
+                                          placeholder="Auto-generated from title" 
+                                          class="metadata-input"
+                                          rows="3"></textarea>
                             </div>
                         </div>
                     </div>
