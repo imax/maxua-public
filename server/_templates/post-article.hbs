@@ -4,7 +4,7 @@
   {{/if}}
   
   <div class="article-meta">
-    Published on <span class="article-date">{{formatted_date}}</span>
+    Published on <span class="article-date">{{formatDate created_at "short"}}</span>
     {{#if singlePostPage}}
       <span x-data="{ isAdmin: false }" x-init="isAdmin = localStorage.getItem('microblog_auth') !== null">
         <a x-show="isAdmin" href="/article?edit={{id}}" class="edit-link">Edit</a>

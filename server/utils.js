@@ -183,12 +183,23 @@ function wrap(handler) {
 /**
  * Format a date in a clean, concise way
  * @param {string} dateStr - ISO date string
+ * @param {string} style - 'default' for current format, 'short' for date-only
  * @return {string} Formatted date
  */
-function formatDate(dateStr) {
+function formatDate(dateStr, style = 'default') {
   const date = new Date(dateStr);
   
-  // 11/4/2025, 16:28:46
+  if (style === 'short') {
+    // Format as "May 12, 2025"
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long',
+      day: 'numeric',
+      timeZone: 'Europe/Kyiv'
+    });
+  }
+  
+  // Default format: 11/4/2025, 16:28:46
   const options = { 
     year: 'numeric', 
     month: 'numeric',

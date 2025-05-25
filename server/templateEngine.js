@@ -91,10 +91,6 @@ Handlebars.registerHelper('permalink', function(post) {
   return `/p/${post.id}`;
 });
 
-Handlebars.registerHelper('formatDate', function(dateStr) {
-  return formatDate(dateStr);
-});
-
 Handlebars.registerHelper('add', function(a, b) {
   return a + b;
 });
@@ -129,6 +125,16 @@ Handlebars.registerHelper('json', function(context) {
 
 Handlebars.registerHelper('markdownToHtml', function(content) {
   return content ? md.render(content) : '';
+});
+
+Handlebars.registerHelper('formatDate', function(dateStr, style) {
+  // Handle both single argument (dateStr) and two arguments (dateStr, style)
+  if (typeof style === 'object') {
+    // If style is the Handlebars options object, use default style
+    return formatDate(dateStr);
+  }
+  
+  return formatDate(dateStr, style);
 });
 
 // QOTD feature
