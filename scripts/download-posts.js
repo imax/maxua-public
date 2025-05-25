@@ -53,9 +53,10 @@ async function downloadPosts() {
 
     // Query posts from the last N days, including slug
     const result = await pool.query(`
-      SELECT content, created_at, slug, id 
+      SELECT content, created_at, slug, type, metadata, id 
       FROM posts 
-      WHERE created_at >= NOW() - INTERVAL '${days} days'
+      WHERE status='public' 
+      AND created_at >= NOW() - INTERVAL '${days} days'
       ORDER BY created_at DESC
     `);
 
@@ -74,9 +75,17 @@ async function downloadPosts() {
       const slug = post.slug || `post-${post.id}`; // Fallback if slug is missing
       
       // Write metadata and content
+      outputStream.write(`ID: ${post.id}\n`);
       outputStream.write(`Date: ${formattedDate}\n`);
-      outputStream.write(`Slug: ${slug}\n\n`);
-      outputStream.write(`${post.content}\n`);
+      outputStream.write(`Type: ${post.type}\n`);
+      outputStream.write(`Slug: ${slug}\n`);
+      if (post.metadata && post.metadata !== '{}') {
+        const metadata = post.metadata;
+        //if (metadata?.url) outputStream.write(`Meta URL: ${metadata.url}\n`);
+        //if (metadata?.title) outputStream.write(`Meta Title: ${metadata.title}\n`);
+        outputStream.write(`Meta: ${JSON.stringify(post.metadata, null, 2)}\n`);
+      }
+      outputStream.write(`\n${post.content}\n`);
       
       // Add separator between posts (except for the last one)
       if (index < result.rows.length - 1) {
