@@ -14,11 +14,14 @@
     <main>
         {{> profile-header activePage="article"}}
 
-        <div class="compose-container" x-data="articleApp()">
+        <div class="compose-container" x-data="articleApp()" 
+          x-init="{{#if articleData}}initWithEditData(){{/if}}">
             <div class="compose-card">
                 <div class="compose-header">
-                    <h2 class="compose-title">Write Article</h2>
-                    <p class="compose-subtitle">Create a longer-form post with markdown support</p>
+                    <h2 class="compose-title">
+                      <span x-text="editMode ? 'Edit Article' : 'Write Article'"></span>
+                    </h2>
+                    <p class="compose-subtitle" x-text="editMode ? 'Update your article - the original publish date will be preserved' : 'Create a longer-form post with markdown support'"></p>
                 </div>
                 
                 <form @submit.prevent="submitArticle()">
@@ -66,12 +69,15 @@ Code block
                                     :class="{ 'active': showPreview }">
                                 <span x-text="showPreview ? 'Edit' : 'Preview'"></span>
                             </button>
+                            <button x-show="editMode" type="button" @click="cancelEdit()" :disabled="submitting" class="cancel-button">
+                                Cancel
+                            </button>
                         </div>
                         <div class="button-group-right">
                             <button type="submit" 
                                     :disabled="submitting || !title.trim() || !content.trim()" 
                                     class="post-button">
-                                <span x-text="submitting ? 'Publishing...' : 'Publish Article'"></span>
+                                <span x-text="submitting ? (editMode ? 'Updating...' : 'Publishing...') : (editMode ? 'Update Article' : 'Publish Article')"></span>
                             </button>
                         </div>
                     </div>
@@ -82,10 +88,21 @@ Code block
                          :class="`status-message status-${statusType}`"
                          x-transition>
                     </div>
+                    
+                    <!-- Edit Mode Info -->
+                    <div class="edit-info" x-show="editMode">
+                        <p class="edit-note">
+                            <strong>Editing Article #<span x-text="editPostId"></span></strong> - 
+                            You're editing a published article. The original publish date will be preserved.
+                        </p>
+                    </div>
                 </form>
             </div>
         </div>
     </main>
+
+    <!-- Hidden input for edit data -->
+    <input type="hidden" id="edit-article-data" value="{{json articleData}}" {{#unless articleData}}style="display:none"{{/unless}}>
 
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.0.0/dist/markdown-it.min.js"></script>
     <script src="/js/article-compose.js"></script>

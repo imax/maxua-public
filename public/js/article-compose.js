@@ -7,6 +7,8 @@ function articleApp() {
         submitting: false,
         statusMessage: '',
         statusType: '',
+        editMode: false,
+        editPostId: null,
         md: null,
 
         init() {
@@ -25,7 +27,7 @@ function articleApp() {
                     return;
                 }
                 
-                // Ctrl+Enter to publish
+                // Ctrl+Enter to publish/update
                 if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                     e.preventDefault();
                     this.submitArticle();
@@ -36,7 +38,36 @@ function articleApp() {
                     e.preventDefault();
                     this.showPreview = !this.showPreview;
                 }
+                
+                // Escape to cancel edit
+                if (e.key === 'Escape' && this.editMode) {
+                    e.preventDefault();
+                    this.cancelEdit();
+                }
             });
+        },
+
+        // Initialize with edit data from DOM
+        initWithEditData() {
+            const dataElement = document.getElementById('edit-article-data');
+            if (!dataElement || !dataElement.value) return;
+
+            try {
+                const articleData = JSON.parse(dataElement.value);
+
+                // Set edit mode
+                this.editMode = true;
+                this.editPostId = articleData.id;
+
+                // Set fields
+                this.title = articleData.title || '';
+                this.content = articleData.content || '';
+
+                console.log('Initialized edit mode for article:', articleData.id);
+            } catch (error) {
+                console.error('Error initializing edit data:', error);
+                this.showStatus('Error loading article data for editing', 'error');
+            }
         },
 
         // Computed property for rendered markdown
@@ -52,7 +83,7 @@ function articleApp() {
             }
         },
 
-        // Submit article
+        // Submit article (create or update)
         async submitArticle() {
             if (this.submitting) return;
             
@@ -69,32 +100,49 @@ function articleApp() {
             this.submitting = true;
 
             try {
+                const body = {
+                    title: this.title.trim(),
+                    content: this.content.trim()
+                };
+
+                // Add edit post ID if we're editing
+                if (this.editMode && this.editPostId) {
+                    body.editPostId = this.editPostId;
+                }
+
                 const response = await fetch('/article/publish', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
-                    body: JSON.stringify({
-                        title: this.title.trim(),
-                        content: this.content.trim()
-                    })
+                    body: JSON.stringify(body)
                 });
             
                 const result = await response.json();
                 
                 if (response.ok) {
-                    this.showStatus("Article published successfully!", "success");
+                    const actionText = this.editMode ? "updated" : "published";
+                    this.showStatus(`Article ${actionText} successfully!`, "success");
                     
                     // Redirect to the article after a delay
                     setTimeout(() => {
                         window.location.href = `/p/${result.article.id}`;
                     }, 1500);
                 } else {
-                    throw new Error(result.error || 'Failed to publish article');
+                    throw new Error(result.error || 'Failed to save article');
                 }
             } catch (error) {
                 this.showStatus(`Error: ${error.message}`, "error");
             } finally {
                 this.submitting = false;
+            }
+        },
+
+        // Cancel edit mode
+        cancelEdit() {
+            if (this.editMode && this.editPostId) {
+                window.location.href = `/p/${this.editPostId}`;
+            } else {
+                window.location.href = '/';
             }
         },
 
