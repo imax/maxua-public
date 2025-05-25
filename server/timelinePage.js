@@ -1,6 +1,6 @@
 // functions/timelinePage.js
 
-const { pool, getCorsHeaders, getETagHeaders, formatDate } = require('./utils');
+const { pool, getCorsHeaders, getETagHeaders } = require('./utils');
 const templateEngine = require('./templateEngine');
 const { 
   generateMetaTags, 
@@ -40,7 +40,6 @@ exports.handler = async (event, context) => {
       // Format the post data for the template
       return {
         ...post,
-        formatted_date: formatDate(post.created_at),
         content_html: linkifyText(escapeHTML(post.content))
       };
     });

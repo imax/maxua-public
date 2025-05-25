@@ -1,6 +1,6 @@
 // server/dailyEmail.js - Daily digest email sender
 const { Resend } = require('resend');
-const { pool, formatDate, escapeHTML } = require('./utils');
+const { pool, escapeHTML } = require('./utils');
 const { render } = require('./templateEngine');
 const readline = require('readline');
 
@@ -87,12 +87,6 @@ async function sendDailyDigest(options = {}) {
     const digestDate = today.toISOString().slice(0, 10).replace(/-/g, '');
     const digestId = `daily#${digestDate}`;
 
-    const dateFormatted = today.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-    
     // Determine the subject line
     let subjectLine;
     
@@ -147,7 +141,7 @@ async function sendDailyDigest(options = {}) {
     if (dryRun) {
       const baseHtml = render('email-digest', {
         posts: formattedPosts,
-        dateFormatted
+        today
       });
       return {
         success: true,
@@ -183,7 +177,7 @@ async function sendDailyDigest(options = {}) {
         // Also: replaces unsubscribeUrl placeholder with an actual link
         const html = render('email-digest', {
           posts: formattedPosts,
-          dateFormatted,
+          today,
           someone_special
         }).replace('%%unsubscribeUrl%%', unsubscribeUrl); 
         
@@ -330,7 +324,6 @@ function formatPostsForEmail(posts) {
     
     return {
       ...post,
-      formatted_date: formatDate(post.created_at),
       content_html: linkifyContent(escapedContent).replace(/\n/g, '<br>')
     };
   });

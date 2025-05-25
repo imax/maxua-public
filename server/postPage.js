@@ -1,5 +1,5 @@
 // functions/postPage.js
-const { pool, escapeHTML, linkify, formatDate, getCorsHeaders, getETagHeaders } = require('./utils');
+const { pool, linkify, getCorsHeaders, getETagHeaders } = require('./utils');
 const templateEngine = require('./templateEngine');
 const { 
   generateMetaTags,
@@ -151,7 +151,6 @@ async function prepareTemplateData(post, event, navLinks) {
   const commentsResult = await pool.query(commentsQuery, [post.id]);
   const pinnedComments = commentsResult.rows.map(comment => ({
     ...comment,
-    formatted_date: formatDate(comment.created_at),
     content_html: linkify(comment.content)
   }));
   
@@ -170,9 +169,6 @@ async function prepareTemplateData(post, event, navLinks) {
     };
   }
 
-  // Format the date
-  const formattedDate = formatDate(post.created_at);
-  
   // Extract description for meta tags
   const description = extractDescription(post.content, 160);
   
@@ -208,7 +204,6 @@ async function prepareTemplateData(post, event, navLinks) {
     post: {
       ...post,
       content_html: postContent,
-      formatted_date: formattedDate
     },
     postTitle: previewTitle,
     metaTags,

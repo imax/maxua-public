@@ -49,7 +49,7 @@ class="article-continue-reading">{{ metadata.title }} →</div>{{else}}{{{conten
 
   <div class="post-meta">
     <div class="post-date">
-      <span class="post-date-text">{{formatted_date}}</span>
+      <span class="post-date-text">{{formatDate created_at}}</span>
       <a href="#" class="translate-link" data-post-id="{{id}}" data-translated="false">Translate</a>
   {{#if singlePostPage}}
       <span x-data="{ isAdmin: false }" x-init="isAdmin = localStorage.getItem('microblog_auth') !== null">
