@@ -369,6 +369,9 @@ async function promptForSubject(posts) {
     posts.forEach((post, index) => {
       let subj = post.preview_text || post.content.substring(0, 40);
       subj = subj.replace(/[\r\n]+/g, ' ').trim();
+      if (post.type === 'article' && post.metadata && post.metadata.title) {
+        subj = post.metadata.title;
+      }
       console.log(`${index + 1}: ${subj}`);
     });
     

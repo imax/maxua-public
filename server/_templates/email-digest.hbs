@@ -57,7 +57,10 @@
 
                   <!-- Post Content -->
                   <div style="margin-bottom: 1rem; font-size: 1rem; line-height: 1.6; text-align: left;">
-                    <a href="https://maxua.com/p/{{this.id}}" style="color: #222; text-decoration: none; display: block; text-align: left;">{{{this.content_html}}}</a>
+                    <a href="https://maxua.com/p/{{this.id}}" style="color: #222; text-decoration: none; display: block; text-align: left;">{{#if (eq this.type 'article')}}
+                        <div style="margin-bottom: 0.5rem;">{{{this.preview_text}}}</div>
+                        <div style="color: #1a73e8; font-weight: 500; font-size: 0.95rem;">{{this.metadata.title}} →</div>
+                      {{else}}{{{this.content_html}}}{{/if}}</a>
                   </div>
                   
                   <!-- Rich Link Preview -->
