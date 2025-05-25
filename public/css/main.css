@@ -505,6 +505,31 @@ footer a:hover {
   color: var(--color-accent);
 }
 
+/* Timeline post type filter */
+.timeline h2 {
+  flex-wrap: wrap;
+}
+
+.timeline-filters {
+  font-size: 1.15rem;
+  font-weight: normal;
+}
+
+.timeline-filters a {
+  color: var(--color-accent);
+  text-decoration: none;
+  margin: 0 0.1rem;
+}
+
+.timeline-filters a:hover {
+  text-decoration: underline;
+}
+
+.timeline-filters a.active {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
 /* Post image */
 
 .post-image-container img {

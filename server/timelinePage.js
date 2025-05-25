@@ -21,7 +21,11 @@ exports.handler = async (event, context) => {
     const query = event.queryStringParameters || {};
     const limit = parseInt(query.limit) || 10;
     const offset = parseInt(query.offset) || 0;
-    
+    const typeFilter = query.type;
+
+    // Validate type filter
+    const validTypes = ['link', 'article', 'podcast', 'text', 'quote'];
+    const currentFilter = validTypes.includes(typeFilter) ? typeFilter : null;
     
     // Fetch posts with optimized query
     let postsQuery = `
@@ -30,6 +34,12 @@ exports.handler = async (event, context) => {
     
     const queryParams = [];
     let paramIndex = 1;
+
+    // Add type filter if specified
+    if (currentFilter) {
+      postsQuery += ` AND p.type = $${paramIndex++}`;
+      queryParams.push(currentFilter);
+    }
     
     // Add ordering and pagination
     postsQuery += ` ORDER BY p.created_at DESC LIMIT $${paramIndex++} OFFSET $${paramIndex++}`;
@@ -44,9 +54,16 @@ exports.handler = async (event, context) => {
       };
     });
     
-    // Determine if there are more posts for pagination
+    // Update count query to respect filter
     let countQuery = 'SELECT COUNT(*) FROM posts WHERE status = \'public\'';
-    const countResult = await pool.query(countQuery);
+    let countParams = [];
+    
+    if (currentFilter) {
+      countQuery += ' AND type = $1';
+      countParams.push(currentFilter);
+    }
+
+    const countResult = await pool.query(countQuery, countParams);
     const totalCount = parseInt(countResult.rows[0].count);
     const hasMore = offset + limit < totalCount;
     
@@ -64,6 +81,8 @@ exports.handler = async (event, context) => {
         return templateEngine.render('post-card', post);
       }).join('');
 
+      const filterParam = currentFilter ? `&type=${currentFilter}` : '';
+
       // If no more posts, add script to remove the button
       const footerHtml = !hasMore ? `
         <script>
@@ -76,7 +95,7 @@ exports.handler = async (event, context) => {
         <!-- Update the load more button with the new offset -->
         <div id="load-more-button" hx-swap-oob="true">
           <button 
-             hx-get="/?offset=${offset + limit}&htmx=true"
+             hx-get="/?offset=${offset + limit}${filterParam}&htmx=true"
              hx-target="#posts-container"
              hx-swap="beforeend"
              class="load-more">
@@ -99,13 +118,32 @@ exports.handler = async (event, context) => {
       };
     }
 
-    const pageTitle = "Max Ischenko personal blog";
-    
-    // Create a description for meta tags
+    let pageTitle = "Max Ischenko blog";
     let pageDescription = 'Thoughts on startups and product. Founder of DOU.ua and Djinni.';
+
+    if (currentFilter === 'link') {
+      pageTitle = "Links - Max Ischenko";
+      pageDescription = "Interesting links and resources";
+    } else if (currentFilter === 'quote') {
+      pageTitle = "Quotes - Max Ischenko"; 
+      pageDescription = "Interesting quotes I found";
+    } else if (currentFilter === 'article') {
+      pageTitle = "Articles - Max Ischenko"; 
+      pageDescription = "Long-form articles";
+    } else if (currentFilter === 'podcast') {
+      pageTitle = "Podcast - Max Ischenko";
+      pageDescription = "Episodes from 'Startups are Hard' podcast";
+    }
+
+    if (currentFilter) {
+      const capitalizedFilter = currentFilter.charAt(0).toUpperCase() + currentFilter.slice(1);
+      pageTitle += ` #${capitalizedFilter}`;
+    }
     
     // Construct canonical URL
-    const canonicalUrl = 'https://maxua.com';
+    const canonicalUrl = currentFilter 
+      ? `https://maxua.com/?type=${currentFilter}`
+      : 'https://maxua.com';
     
     // Generate meta tags
     const metaTags = generateMetaTags({
@@ -134,6 +172,7 @@ exports.handler = async (event, context) => {
     // Prepare template data
     const templateData = {
       posts,
+      cf: currentFilter,
       pagination: {
         offset,
         limit,

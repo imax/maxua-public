@@ -74,7 +74,15 @@ button.load-more {
     
     <div class="timeline">
 
-      <h2>What's on my mind</h2>
+      <h2>What's on my mind 
+      <span class="timeline-filters">
+<a href="/?type=link" {{#if (eq cf "link")}}class="active"{{/if}}>Links</a> • 
+<a href="/?type=quote" {{#if (eq cf "quote")}}class="active"{{/if}}>Quotes</a> • 
+<a href="/?type=article" {{#if (eq cf "article")}}class="active"{{/if}}>Articles</a> • 
+<a href="/?type=podcast" {{#if (eq cf "podcast")}}class="active"{{/if}}>Podcast</a>
+        {{#if cf}} • <a href="/">All</a>{{/if}}
+      </span>
+    </h2>
       
       <div id="posts-container">
         {{#if posts.length}}
@@ -92,7 +100,7 @@ button.load-more {
       {{#if pagination.hasMore}}
       <div id="load-more-container">
         <button id="load-more-button"
-           hx-get="/?offset={{add pagination.offset pagination.limit}}&htmx=true"
+            hx-get="/?offset={{add pagination.offset pagination.limit}}{{#if cf}}&type={{cf}}{{/if}}&htmx=true"
            hx-target="#posts-container"
            hx-swap="beforeend"
            class="load-more">
