@@ -334,13 +334,25 @@ function extractMetaTag(html, name) {
   const ogMatch = html.match(new RegExp(`<meta[^>]*(?:property|name)=["']${name}["'][^>]*content=["']([^"']*)["']`, 'i'));
   const ogMatchReverse = html.match(new RegExp(`<meta[^>]*content=["']([^"']*)["'][^>]*(?:property|name)=["']${name}["']`, 'i'));
   
+  let content = null;
   if (ogMatch && ogMatch[1]) {
-    return ogMatch[1];
+    content = ogMatch[1];
   } else if (ogMatchReverse && ogMatchReverse[1]) {
-    return ogMatchReverse[1];
+    content = ogMatchReverse[1];
   }
   
-  return null;
+  // Decode HTML entities
+  if (content) {
+    content = content
+      .replace(/&#x27;/g, "'")
+      .replace(/&#39;/g, "'")
+      .replace(/&quot;/g, '"')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>');
+  }
+  
+  return content;
 }
 
 /**
