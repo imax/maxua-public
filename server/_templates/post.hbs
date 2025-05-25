@@ -27,6 +27,12 @@
       {{/with}}
     </div>
 
+      {{#with post}}
+        {{#if (eq type 'article')}}
+{{> subscription-form title="Отримуй нові пости на пошту" }}
+        {{/if}}
+      {{/with}}
+
     {{#if navLinks}}
     <div class="post-navigation">
       <div class="post-nav-links">

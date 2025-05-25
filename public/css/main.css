@@ -201,6 +201,14 @@ footer a:hover {
   border-color: var(--color-accent);
 }
 
+.subscribe-button {
+  background-color: var(--color-muted-link);
+}
+
+.subscribe-button:hover {
+  background-color: var(--color-muted-link-hover);
+}
+
 .subscription-info {
   font-size: 0.95rem;
   color: #666;
