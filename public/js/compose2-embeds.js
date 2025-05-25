@@ -62,6 +62,37 @@ function composeEmbedsModule() {
       }
     },
 
+    // Add paste event listener for auto-detection
+    setupPasteDetection() {
+      const textarea = document.querySelector('.compose-textarea');
+      if (!textarea) return;
+      
+      textarea.addEventListener('paste', (e) => {
+        // Use setTimeout to get the pasted content after it's inserted
+        setTimeout(() => {
+          this.detectPostType();
+        }, 10);
+      });
+    },
+
+    // Detect post type based on content
+    detectPostType() {
+      const content = this.content.trim();
+      if (!content) return;
+      
+      // Check for URLs first
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      const hasUrl = urlRegex.test(content);
+      
+      if (hasUrl) {
+        this.postType = 'link';
+        // Existing URL detection will handle metadata fetching
+      } else {
+        // Any other pasted content becomes a quote
+        this.postType = 'quote';
+      }
+    },
+
     // Check if we already have URL metadata
     hasUrlInMetadata() {
       // Check if we already have url, title, description or image_url in metadata

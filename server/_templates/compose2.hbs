@@ -43,7 +43,23 @@
                     autofocus></textarea>
 
 <input type="hidden" id="edit-post-data" value="{{json postData}}" {{#unless postData}}style="display:none"{{/unless}}>
-                  
+
+
+<!-- Post Type -->
+<div style="display: flex; justify-content: flex-end; font-size: 0.85rem; gap: 1rem;">
+  <label style="display: flex; align-items: center; gap: 0.3rem; cursor: pointer;">
+    <input type="radio" x-model="postType" value="text" style="margin: 0;">
+    <span>Text</span>
+  </label>
+  <label style="display: flex; align-items: center; gap: 0.3rem; cursor: pointer;">
+    <input type="radio" x-model="postType" value="quote" style="margin: 0;">
+    <span>Quote</span>
+  </label>
+  <label style="display: flex; align-items: center; gap: 0.3rem; cursor: pointer;">
+    <input type="radio" x-model="postType" value="link" style="margin: 0;">
+    <span>Link</span>
+  </label>
+</div>
           <div class="metadata-section" 
              x-data="{ expanded: false }">
             <div class="metadata-header">

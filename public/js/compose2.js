@@ -6,6 +6,7 @@ function composeApp() {
         content: '',
         metadata: {},       // Stores fields with key and value properties
         submitting: null,   // null, 'draft', or 'published'
+        postType: 'text', 
         statusMessage: '',
         statusType: '',
         shareTelegram: true,
@@ -44,6 +45,8 @@ function composeApp() {
                 }
             });
             
+            this.setupPasteDetection(); // postType auto-select
+
             await this.initDrafts();
         },
 
@@ -163,7 +166,7 @@ function composeApp() {
                     content: this.content,
                     draftId: !this.isEditMode ? this.currentDraftId : null,
                     editPostId: this.isEditMode ? this.editPostId : null,
-                    type: 'text', // Always set to text
+                    type: this.postType,
                     metadata: flatMetadata,
                     shareTelegram: this.shareTelegram,
                     shareBluesky: this.shareBluesky,
