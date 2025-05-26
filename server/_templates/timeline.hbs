@@ -74,23 +74,15 @@ button.load-more {
     
     <div class="timeline">
 
-{{#if cf}}
-  {{#if (eq cf "link")}}
-    <h2>What I'm reading</h2>
-  {{else if (eq cf "quote")}}
-    <h2>Quotes I've enjoyed</h2>
-  {{else if (eq cf "text")}}
-    <h2>Posts (microblog)</h2>
-  {{else if (eq cf "article")}}
-    <h2>Articles and long-form content</h2>
-  {{else if (eq cf "podcast")}}
-    <h2>Подкаст Startups are hard</h2>
-  {{else}}
-    <h2>What's on my mind</h2>
-  {{/if}}
-{{else}}
-  <h2>What's on my mind</h2>
-{{/if}}
+      <h2>What's on my mind 
+       <span class="timeline-filters">
+       <a href="/texts" {{#if (eq cf "text")}}class="active"{{/if}}>Posts</a> • 
+       <a href="/links" {{#if (eq cf "link")}}class="active"{{/if}}>Links</a> • 
+       <a href="/quotes" {{#if (eq cf "quote")}}class="active"{{/if}}>Quotes</a> • 
+       <a href="/articles" {{#if (eq cf "article")}}class="active"{{/if}}>Articles</a> • 
+       <a href="/podcast" {{#if (eq cf "podcast")}}class="active"{{/if}}>Podcast</a>
+      </span>
+      </h2>
 
       <div id="posts-container">
         {{#if posts.length}}

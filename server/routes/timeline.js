@@ -134,7 +134,7 @@ async function handleTimeline(req, res) {
       pageTitle = "Подкаст Startups are hard - Max Ischenko"; 
       pageDescription = "'Startups are hard' latest episodes";
     } else if (currentFilter === 'text') {
-      pageTitle = "Short posts - Max Ischenko"; 
+      pageTitle = "Posts - Max Ischenko"; 
       pageDescription = "My microblog :)";
     } else if (currentFilter === 'article') {
       pageTitle = "Articles - Max Ischenko"; 
