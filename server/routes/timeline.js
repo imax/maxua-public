@@ -17,10 +17,13 @@ async function handleTimeline(req, res) {
     // Extract type from URL path
     let typeFilter = null;
     const path = req.path;
+
+    console.log("handleTimeline", path);
     
     if (path === '/links') typeFilter = 'link';
     else if (path === '/quotes') typeFilter = 'quote';
-    else if (path === '/posts') typeFilter = 'text';
+    else if (path === '/texts') typeFilter = 'text';
+    else if (path === '/podcast/' || path === '/podcast') typeFilter = 'podcast';
     else if (path === '/articles') typeFilter = 'article';
     // Homepage (/) shows all types
     
@@ -29,7 +32,7 @@ async function handleTimeline(req, res) {
     const offset = parseInt(req.query.offset) || 0;
 
     // Validate type filter
-    const validTypes = ['link', 'article', 'text', 'quote'];
+    const validTypes = ['link', 'article', 'text', 'podcast', 'quote'];
     const currentFilter = validTypes.includes(typeFilter) ? typeFilter : null;
     
     // Fetch posts with optimized query
@@ -127,6 +130,12 @@ async function handleTimeline(req, res) {
     } else if (currentFilter === 'quote') {
       pageTitle = "Quotes - Max Ischenko"; 
       pageDescription = "Interesting quotes I found";
+    } else if (currentFilter === 'podcast') {
+      pageTitle = "Подкаст Startups are hard - Max Ischenko"; 
+      pageDescription = "'Startups are hard' latest episodes";
+    } else if (currentFilter === 'text') {
+      pageTitle = "Posts - Max Ischenko"; 
+      pageDescription = "My microblog :)";
     } else if (currentFilter === 'article') {
       pageTitle = "Articles - Max Ischenko"; 
       pageDescription = "Long-form articles";
@@ -188,9 +197,10 @@ async function handleTimeline(req, res) {
 
 // Route definitions
 router.get('/', handleTimeline);
-router.get('/posts', handleTimeline);
+router.get('/texts', handleTimeline);
 router.get('/links', handleTimeline);
 router.get('/quotes', handleTimeline);
+router.get('/podcast', handleTimeline);
 router.get('/articles', handleTimeline);
 
 /**

@@ -78,6 +78,9 @@ app.use('/compose', compose2Routes);
 const articleRoutes = require('./routes/article');
 app.use('/article', articleRoutes);
 
+const timelineRoutes = require('./routes/timeline');
+app.use('/', timelineRoutes);
+
 // STATIC paths - from Netlify
 const path = require('path');
 
@@ -235,9 +238,6 @@ app.get('/t/:topic', async (req, res) => {
 
 // Set up SSR routes using the adapter
 app.get('/sitemap.xml', createServerlessAdapter(sitemap));
-
-const timelineRoutes = require('./routes/timeline');
-app.use('/', timelineRoutes);
 
 // single page route
 // handles old /p/{id} style and slug redirects for SEO
