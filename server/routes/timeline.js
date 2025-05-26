@@ -1,30 +1,34 @@
-// functions/timelinePage.js
-
-const { pool, getCorsHeaders, getETagHeaders } = require('./utils');
-const templateEngine = require('./templateEngine');
+// server/routes/timeline.js
+const express = require('express');
+const router = express.Router();
+const { pool } = require('../utils');
+const templateEngine = require('../templateEngine');
 const { 
   generateMetaTags, 
   generateBlogListingSchema,
-  generatePersonSchema,
-  extractDescription
-} = require('./seo');
-
-// Register partials
-templateEngine.registerPartial('subscription-form', 'subscription-form');
+  generatePersonSchema
+} = require('../seo');
 
 /**
- * Handler for timeline page requests 
+ * Main timeline handler - supports both clean URLs and query params
  */
-exports.handler = async (event, context) => {
+async function handleTimeline(req, res) {
   try {
-    // Get query parameters
-    const query = event.queryStringParameters || {};
-    const limit = parseInt(query.limit) || 10;
-    const offset = parseInt(query.offset) || 0;
-    const typeFilter = query.type;
+    // Extract type from URL path
+    let typeFilter = null;
+    const path = req.path;
+    
+    if (path === '/links') typeFilter = 'link';
+    else if (path === '/quotes') typeFilter = 'quote';
+    else if (path === '/articles') typeFilter = 'article';
+    // Homepage (/) shows all types
+    
+    // Get query parameters for pagination
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = parseInt(req.query.offset) || 0;
 
     // Validate type filter
-    const validTypes = ['link', 'article', 'podcast', 'text', 'quote'];
+    const validTypes = ['link', 'article', 'text', 'quote'];
     const currentFilter = validTypes.includes(typeFilter) ? typeFilter : null;
     
     // Fetch posts with optimized query
@@ -68,20 +72,16 @@ exports.handler = async (event, context) => {
     const hasMore = offset + limit < totalCount;
     
     // Check if this is an htmx request
-    const isHtmxRequest = Boolean(
-      (event.headers && (
-        event.headers['HX-Request'] === 'true' || 
-        event.headers['hx-request'] === 'true')) ||
-      event.queryStringParameters?.htmx === 'true'
-    );
+    const isHtmxRequest = req.headers['hx-request'] === 'true' || req.query.htmx === 'true';
 
     if (isHtmxRequest) {
-      
       const postsHtml = posts.map(post => {
         return templateEngine.render('post-card', post);
       }).join('');
 
-      const filterParam = currentFilter ? `&type=${currentFilter}` : '';
+      // Build the load more URL
+      const baseUrl = currentFilter ? `/${currentFilter}s` : '/';
+      const loadMoreUrl = `${baseUrl}?offset=${offset + limit}&htmx=true`;
 
       // If no more posts, add script to remove the button
       const footerHtml = !hasMore ? `
@@ -95,7 +95,7 @@ exports.handler = async (event, context) => {
         <!-- Update the load more button with the new offset -->
         <div id="load-more-button" hx-swap-oob="true">
           <button 
-             hx-get="/?offset=${offset + limit}${filterParam}&htmx=true"
+             hx-get="${loadMoreUrl}"
              hx-target="#posts-container"
              hx-swap="beforeend"
              class="load-more">
@@ -106,18 +106,17 @@ exports.handler = async (event, context) => {
       `;
       
       // Return the HTMX response
-      return {
-        statusCode: 200,
-        headers: {
+      return res.status(200)
+        .set({
           'Content-Type': 'text/html',
           'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
           'Pragma': 'no-cache',
           'Expires': '0',
-        },
-        body: postsHtml + footerHtml
-      };
+        })
+        .send(postsHtml + footerHtml);
     }
 
+    // Generate page title and description
     let pageTitle = "Max Ischenko blog";
     let pageDescription = 'Thoughts on startups and product. Founder of DOU.ua and Djinni.';
 
@@ -130,19 +129,11 @@ exports.handler = async (event, context) => {
     } else if (currentFilter === 'article') {
       pageTitle = "Articles - Max Ischenko"; 
       pageDescription = "Long-form articles";
-    } else if (currentFilter === 'podcast') {
-      pageTitle = "Podcast - Max Ischenko";
-      pageDescription = "Episodes from 'Startups are Hard' podcast";
-    }
-
-    if (currentFilter) {
-      const capitalizedFilter = currentFilter.charAt(0).toUpperCase() + currentFilter.slice(1);
-      pageTitle += ` #${capitalizedFilter}`;
     }
     
     // Construct canonical URL
     const canonicalUrl = currentFilter 
-      ? `https://maxua.com/?type=${currentFilter}`
+      ? `https://maxua.com/${currentFilter}s`
       : 'https://maxua.com';
     
     // Generate meta tags
@@ -164,7 +155,6 @@ exports.handler = async (event, context) => {
       generatePersonSchema({
         sameAs: [
           'https://www.linkedin.com/in/maksim/',
-          // Add other social profiles here
         ]
       })
     ].join('\n');
@@ -187,23 +177,19 @@ exports.handler = async (event, context) => {
     // Render the page
     const html = templateEngine.render('timeline', templateData);
     
-    return {
-      statusCode: 200,
-      headers: {
-        ...getCorsHeaders(),
-        //...getETagHeaders(posts),
-      },
-      body: html
-    };
+    res.status(200).send(html);
+    
   } catch (error) {
     console.error('Error rendering timeline page:', error);
-    return {
-      statusCode: 500,
-      headers: { 'Content-Type': 'text/html' },
-      body: `<h1>500 - Server Error</h1><p>${error.message}</p>`
-    };
+    res.status(500).send(`<h1>500 - Server Error</h1><p>${error.message}</p>`);
   }
-};
+}
+
+// Route definitions
+router.get('/', handleTimeline);
+router.get('/links', handleTimeline);
+router.get('/quotes', handleTimeline);
+router.get('/articles', handleTimeline);
 
 /**
  * Escape HTML special characters
@@ -223,9 +209,10 @@ function escapeHTML(str) {
  * This avoids nested anchor tags when making the whole post clickable
  */
 function linkifyText(text) {
-  // Instead of creating anchor tags, mark URLs with a data attribute
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   return text.replace(urlRegex, url => 
     `<span class="post-url" data-url="${url}">${url}</span>`
   );
 }
+
+module.exports = router;

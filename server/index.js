@@ -13,7 +13,6 @@ const feedsRoutes = require('./routes/feeds');
 
 // Import serverless adapters for SSR pages
 const postPage = require('./postPage');
-const timelinePage = require('./timelinePage');
 const sitemap = require('./sitemap');
 
 // Create Express app
@@ -235,8 +234,10 @@ app.get('/t/:topic', async (req, res) => {
 });
 
 // Set up SSR routes using the adapter
-app.get('/', createServerlessAdapter(timelinePage));
 app.get('/sitemap.xml', createServerlessAdapter(sitemap));
+
+const timelineRoutes = require('./routes/timeline');
+app.use('/', timelineRoutes);
 
 // single page route
 // handles old /p/{id} style and slug redirects for SEO
