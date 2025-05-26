@@ -13,7 +13,7 @@
 </head>
 <body>
     <main>
-        {{> profile-header activePage="compose"}}
+        {{> header activePage="compose"}}
 
         <div class="compose-container" x-data="composeApp()" 
           x-init="{{#if postData}}initWithEditDataFromDOM(){{/if}}">
