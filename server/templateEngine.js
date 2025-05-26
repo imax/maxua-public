@@ -187,7 +187,7 @@ Handlebars.registerHelper('getQotd', function(options) {
 // pre-register common snippets available to all
 registerPartial('footer', 'footer'); 
 registerPartial('email-digest', 'email-digest');
-registerPartial('profile-header', 'profile-header');
+registerPartial('header', 'header');
 registerPartial('post-card', 'post-card');
 registerPartial('post-article', 'post-article');
 registerPartial('subscription-form', 'subscription-form');
