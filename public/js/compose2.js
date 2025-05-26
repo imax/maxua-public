@@ -65,6 +65,7 @@ function composeApp() {
 
                 // Set content
                 this.content = postData.content || '';
+                this.postType = postData.type || 'text';
 
                 // Parse and set metadata
                 this.metadata = {};
