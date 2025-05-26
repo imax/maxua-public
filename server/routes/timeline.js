@@ -20,6 +20,7 @@ async function handleTimeline(req, res) {
     
     if (path === '/links') typeFilter = 'link';
     else if (path === '/quotes') typeFilter = 'quote';
+    else if (path === '/posts') typeFilter = 'text';
     else if (path === '/articles') typeFilter = 'article';
     // Homepage (/) shows all types
     
@@ -187,6 +188,7 @@ async function handleTimeline(req, res) {
 
 // Route definitions
 router.get('/', handleTimeline);
+router.get('/posts', handleTimeline);
 router.get('/links', handleTimeline);
 router.get('/quotes', handleTimeline);
 router.get('/articles', handleTimeline);

@@ -510,7 +510,7 @@ footer a:hover {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .timeline-filters {
