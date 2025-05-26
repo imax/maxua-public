@@ -168,8 +168,8 @@ router.post('/post', authMiddleware, async (req, res) => {
         const result = await client.query(
           `UPDATE posts 
            SET content = $1, preview_text = $2, slug = $3, 
-               type = $4, metadata = $4, updated_at = NOW()
-           WHERE id = $5 AND status = 'public'
+               type = $4, metadata = $5, updated_at = NOW()
+           WHERE id = $6 AND status = 'public'
            RETURNING *`,
           [content, previewText, slug, type, JSON.stringify(validatedMetadata), editPostId]
         );
@@ -196,8 +196,8 @@ router.post('/post', authMiddleware, async (req, res) => {
         const result = await client.query(
           `UPDATE posts 
            SET content = $1, preview_text = $2, slug = $3,
-               type = $4, metadata = $4, updated_at = NOW()
-           WHERE id = $5 AND status = 'draft'
+               type = $4, metadata = $5, updated_at = NOW()
+           WHERE id = $6 AND status = 'draft'
            RETURNING *`,
           [content, previewText, slug, type, JSON.stringify(validatedMetadata), draftId]
         );
