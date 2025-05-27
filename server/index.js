@@ -265,6 +265,9 @@ app.use('/api', translationRoutes);
 const adminRoutes = require('./routes/admin');
 app.use('/api/admin', adminRoutes);
 
+const archiveRoutes = require('./routes/archive');
+app.use('/archive', archiveRoutes);
+
 // Start the server
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

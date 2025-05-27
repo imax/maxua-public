@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{pageTitle}}</title>
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+      background-color: #fff;
+      color: #333;
+    }
+    
+    .archive-header {
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .archive-title {
+      font-size: 2rem;
+      margin: 0 0 0.5rem 0;
+      font-weight: 600;
+    }
+    
+    .back-link {
+      color: #666;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    
+    .back-link:hover {
+      text-decoration: underline;
+    }
+    
+    .week-section {
+      margin-bottom: 2rem;
+    }
+    
+    .week-header {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: #222;
+    }
+    
+    .posts-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 0 1rem;
+    }
+    
+    .posts-list li {
+      margin-bottom: 0.5rem;
+      position: relative;
+    }
+    
+    .posts-list li:before {
+      content: "•";
+      position: absolute;
+      left: -1rem;
+      color: #666;
+    }
+    
+    .post-preview {
+      color: #333;
+      line-height: 1.5;
+    }
+    
+    .other-years {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid #eee;
+    }
+    
+    .other-years h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.75rem;
+      color: #555;
+    }
+    
+    .year-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    
+    .year-link {
+      color: #1a73e8;
+      text-decoration: none;
+      padding: 0.25rem 0.5rem;
+      border-radius: 3px;
+      transition: background-color 0.2s;
+    }
+    
+    .year-link:hover {
+      background-color: #f0f0f0;
+      text-decoration: none;
+    }
+    
+    .no-posts {
+      color: #666;
+      font-style: italic;
+      text-align: center;
+      padding: 2rem;
+    }
+    
+    @media (max-width: 600px) {
+      body {
+        padding: 15px;
+      }
+      
+      .archive-title {
+        font-size: 1.6rem;
+      }
+      
+      .week-header {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="archive-header">
+    <a href="/" class="back-link">← Back to blog</a>
+    <h1 class="archive-title">Archive {{year}}</h1>
+  </div>
+
+  {{#if postsByWeek.length}}
+    {{#each postsByWeek}}
+    <div class="week-section">
+      <h2 class="week-header">Week {{weekRange}}</h2>
+      <ul class="posts-list">
+        {{#each posts}}
+        <li>
+          <div class="post-preview">{{truncatedPreview}}</div>
+        </li>
+        {{/each}}
+      </ul>
+    </div>
+    {{/each}}
+  {{else}}
+    <div class="no-posts">No posts found for {{year}}.</div>
+  {{/if}}
+
+  {{#if otherYears.length}}
+  <div class="other-years">
+    <h3>Other years:</h3>
+    <div class="year-links">
+      {{#each otherYears}}
+      <a href="/archive?year={{this}}" class="year-link">{{this}}</a>
+      {{/each}}
+    </div>
+  </div>
+  {{/if}}
+</body>
+</html>
