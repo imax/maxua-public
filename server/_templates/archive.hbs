@@ -13,150 +13,53 @@
       margin: 0 auto;
       padding: 20px;
       line-height: 1.6;
-      background-color: #fff;
-      color: #333;
     }
-    
-    .archive-header {
-      margin-bottom: 2rem;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid #eee;
-    }
-    
-    .archive-title {
-      font-size: 2rem;
-      margin: 0 0 0.5rem 0;
-      font-weight: 600;
-    }
-    
-    .back-link {
-      color: #666;
-      text-decoration: none;
-      font-size: 0.9rem;
-    }
-    
-    .back-link:hover {
+
+    ul a {
       text-decoration: underline;
     }
     
-    .week-section {
+    h1 {
+      font-size: 2rem;
       margin-bottom: 2rem;
     }
     
-    .week-header {
+    h2 {
       font-size: 1.2rem;
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-      color: #222;
-    }
-    
-    .posts-list {
-      list-style: none;
-      padding: 0;
-      margin: 0 0 0 1rem;
-    }
-    
-    .posts-list li {
-      margin-bottom: 0.5rem;
-      position: relative;
-    }
-    
-    .posts-list li:before {
-      content: "•";
-      position: absolute;
-      left: -1rem;
-      color: #666;
-    }
-    
-    .post-preview {
-      color: #333;
-      line-height: 1.5;
+      margin: 2rem 0 0.5rem 0;
     }
     
     .other-years {
       margin-top: 3rem;
-      padding-top: 2rem;
       border-top: 1px solid #eee;
-    }
-    
-    .other-years h3 {
-      font-size: 1.1rem;
-      margin-bottom: 0.75rem;
-      color: #555;
-    }
-    
-    .year-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-    
-    .year-link {
-      color: #1a73e8;
-      text-decoration: none;
-      padding: 0.25rem 0.5rem;
-      border-radius: 3px;
-      transition: background-color 0.2s;
-    }
-    
-    .year-link:hover {
-      background-color: #f0f0f0;
-      text-decoration: none;
-    }
-    
-    .no-posts {
-      color: #666;
-      font-style: italic;
-      text-align: center;
-      padding: 2rem;
-    }
-    
-    @media (max-width: 600px) {
-      body {
-        padding: 15px;
-      }
-      
-      .archive-title {
-        font-size: 1.6rem;
-      }
-      
-      .week-header {
-        font-size: 1.1rem;
-      }
+      padding-top: 2rem;
     }
   </style>
 </head>
 <body>
-  <div class="archive-header">
-    <a href="/" class="back-link">← Back to blog</a>
-    <h1 class="archive-title">Archive {{year}}</h1>
-  </div>
+  <a href="/">← Back to blog</a>
+  <h1>Archive {{year}}</h1>
 
   {{#if postsByWeek.length}}
     {{#each postsByWeek}}
-    <div class="week-section">
-      <h2 class="week-header">Week {{weekRange}}</h2>
-      <ul class="posts-list">
-        {{#each posts}}
-        <li>
-          <div class="post-preview">{{truncatedPreview}}</div>
-        </li>
-        {{/each}}
-      </ul>
-    </div>
+    <h2>{{weekRange}}</h2>
+    <ul>
+      {{#each posts}}
+      <li><a href="{{permalink}}">{{truncatedPreview}}</a></li>
+      {{/each}}
+    </ul>
     {{/each}}
   {{else}}
-    <div class="no-posts">No posts found for {{year}}.</div>
+    <p>No posts found for {{year}}.</p>
   {{/if}}
 
   {{#if otherYears.length}}
   <div class="other-years">
-    <h3>Other years:</h3>
-    <div class="year-links">
+    <p>Other years: 
       {{#each otherYears}}
-      <a href="/archive?year={{this}}" class="year-link">{{this}}</a>
+      <a href="/archive?year={{this}}">{{this}}</a>{{#unless @last}} | {{/unless}}
       {{/each}}
-    </div>
+    </p>
   </div>
   {{/if}}
 </body>

@@ -71,7 +71,8 @@ function groupPostsByWeek(posts, year) {
     
     weeks[weekKey].posts.push({
       ...post,
-      truncatedPreview: truncatedPreview.replace(/\n/g, ' ').trim()
+      truncatedPreview: truncatedPreview.replace(/\n/g, ' ').trim(),
+      permalink: post.slug ? `/p/${post.slug}-${post.id}` : `/p/${post.id}`
     });
   });
   
