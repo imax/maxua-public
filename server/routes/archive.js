@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
     
     // Query posts for the specified year
     const postsResult = await pool.query(`
-      SELECT id, content, preview_text, created_at, type 
+      SELECT id, content, preview_text, created_at, slug, type 
       FROM posts 
       WHERE status = 'public' 
         AND EXTRACT(YEAR FROM created_at) = $1
@@ -72,7 +72,6 @@ function groupPostsByWeek(posts, year) {
     weeks[weekKey].posts.push({
       ...post,
       truncatedPreview: truncatedPreview.replace(/\n/g, ' ').trim(),
-      permalink: post.slug ? `/p/${post.slug}-${post.id}` : `/p/${post.id}`
     });
   });
   
