@@ -12,7 +12,7 @@
 </head>
 <body>
     <main>
-        {{> profile-header activePage="article"}}
+        {{> header activePage="article"}}
 
         <div class="compose-container" x-data="articleApp()" 
           x-init="{{#if articleData}}initWithEditData(){{/if}}">
