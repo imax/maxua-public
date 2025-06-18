@@ -107,9 +107,6 @@ Handlebars.registerHelper('neq', function (a, b, options) {
   return a != b;
 });
 
-Handlebars.registerHelper('markdownToHtml', function(content) {
-   return content ? md.render(content) : '';
- });
  
 Handlebars.registerHelper('substring', function(str, start, end) {
   return str ? str.substring(start, end) : '';
