@@ -772,6 +772,60 @@ footer a:hover {
   font-size: 0.9rem;
 }
 
+/* Add these styles to public/css/main.css */
+
+.writing-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.writing-page p {
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.writing-page h1 {
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.articles-list {
+  list-style: none;
+  padding-left: 0rem;
+  margin: 0 0 3rem 0;
+}
+
+.article-item {
+  margin-bottom: 0.5rem;
+}
+
+.article-link {
+  color: #0066cc;
+  text-decoration: underline;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.article-link:hover {
+  color: #0052a3;
+}
+
+.empty-message {
+  color: var(--color-secondary-text);
+  font-style: italic;
+  margin-bottom: 3rem;
+}
+
+@media (max-width: 640px) {
+  .writing-page h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
 /* Article styles */
 .article-container {
   margin: 2rem 0;

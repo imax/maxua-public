@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{pageTitle}}</title>
+
+  {{{metaTags}}}
+  {{{structuredData}}}
+
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="preload" href="/css/main.css?v=1239" as="style">
+  <link rel="stylesheet" href="/css/main.css?v=1239">
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body>
+  <main>
+    {{> header activePage="writing"}}
+    
+    <div class="writing-page">
+      <p class="lead">Пошук відповідей про стартапи, розробку продукта і життя.</p>
+      
+      {{#if articles.length}}
+        <ul class="articles-list">
+          {{#each articles}}
+          <li class="article-item">
+            <a href="{{permalink this}}" class="article-link">{{title}}</a>
+          </li>
+          {{/each}}
+        </ul>
+      {{else}}
+        <p class="empty-message">No articles yet.</p>
+      {{/if}}
+      
+      {{> subscription-form}}
+    </div>
+  </main>
+
+  {{> footer}}
+</body>
+</html>

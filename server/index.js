@@ -3,7 +3,10 @@ require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const Sentry = require('@sentry/node');
+
 const { pool, rateLimiterMiddleware, authMiddleware } = require('./utils');
+const { generateMetaTags, generateBlogListingSchema, generatePersonSchema } = require('./seo');
+const templateEngine = require('./templateEngine');
 
 // Import route modules
 const authRoutes = require('./routes/auth');
@@ -115,6 +118,82 @@ app.get(['/test_auth', '/books', '/about', '/zsu'], (req, res) => {
 app.get('/admin', authMiddleware, (req, res) => {
   const pageName = req.path.substring(1);
   res.sendFile(path.join(__dirname, '../public', `${pageName}.html`));
+});
+
+app.get('/writing', async (req, res) => {
+  try {
+    // Fetch all published articles, newest first
+    const result = await pool.query(`
+      SELECT id, metadata, slug, created_at
+      FROM posts 
+      WHERE type = 'article' AND status = 'public'
+      ORDER BY created_at DESC
+    `);
+    
+    // Extract titles from metadata and prepare articles data
+    const articles = result.rows.map(post => {
+      let title = 'Untitled Article';
+      
+      // Parse metadata to get the title
+      if (post.metadata) {
+        try {
+          const metadata = typeof post.metadata === 'string' 
+            ? JSON.parse(post.metadata) 
+            : post.metadata;
+          title = metadata.title || title;
+        } catch (e) {
+          console.warn('Failed to parse article metadata for post', post.id);
+        }
+      }
+      
+      return {
+        id: post.id,
+        title: title,
+        slug: post.slug,
+        created_at: post.created_at
+      };
+    });
+    
+    // Generate meta tags for SEO
+    const metaTags = generateMetaTags({
+      title: 'Writing - Max Ischenko',
+      description: 'Пошук відповідей про стартапи, розробку продукта і життя',
+      url: 'https://maxua.com/writing',
+      keywords: 'articles, essays, writing, Max Ischenko',
+    });
+    
+    // Generate structured data
+    const structuredData = [
+      generateBlogListingSchema({
+        url: 'https://maxua.com/writing',
+        title: 'Writing - Max Ischenko',
+        description: 'Пошук відповідей про стартапи, розробку продукта і життя',
+        posts: articles.slice(0, 10) // Include first 10 in schema
+      }),
+      generatePersonSchema({
+        sameAs: [
+          'https://www.linkedin.com/in/maksim/',
+        ]
+      })
+    ].join('\n');
+    
+    // Prepare template data
+    const templateData = {
+      articles,
+      pageTitle: 'Writing - Max Ischenko',
+      metaTags,
+      structuredData
+    };
+    
+    // Render the writing page template
+    const html = templateEngine.render('writing', templateData);
+    
+    res.status(200).send(html);
+    
+  } catch (error) {
+    console.error('Error rendering writing page:', error);
+    res.status(500).send(`<h1>500 - Server Error</h1><p>${error.message}</p>`);
+  }
 });
 
 // Track post and page views
