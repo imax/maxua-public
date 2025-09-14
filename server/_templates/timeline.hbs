@@ -74,15 +74,7 @@ button.load-more {
     
     <div class="timeline">
 
-      <h2>What's on my mind 
-       <span class="timeline-filters">
-       <a href="/texts" {{#if (eq cf "text")}}class="active"{{/if}}>Posts</a> • 
-       <a href="/links" {{#if (eq cf "link")}}class="active"{{/if}}>Links</a> • 
-       <a href="/quotes" {{#if (eq cf "quote")}}class="active"{{/if}}>Quotes</a> • 
-       <a href="/articles" {{#if (eq cf "article")}}class="active"{{/if}}>Articles</a> • 
-       <a href="/podcast" {{#if (eq cf "podcast")}}class="active"{{/if}}>Podcast</a>
-      </span>
-      </h2>
+      <h2>What's on my mind</h2>
 
       <div id="posts-container">
         {{#if posts.length}}
