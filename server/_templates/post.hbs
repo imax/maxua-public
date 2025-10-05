@@ -29,10 +29,12 @@
 
       {{#with post}}
         {{#if (eq type 'article')}}
-{{> subscription-form title="Отримуй нові пости на пошту" }}
+          {{> subscription-kit }}
         {{/if}}
       {{/with}}
 
+    {{#with post}}
+    {{#if (neq type 'article')}}
     {{#if navLinks}}
     <div class="post-navigation">
       <div class="post-nav-links">
@@ -68,6 +70,8 @@
       </div>
     </div>
     {{/if}}
+    {{/if}}
+    {{/with}}
 
     {{#if pinnedComments.length}}
     <div class="pinned-comments-section">
@@ -84,6 +88,8 @@
     </div>
     {{/if}}
 
+    {{#with post}}
+    {{#if (neq type 'article')}}
 <div class="comment-form-container" id="comments" style="margin-top: 3rem;">
   <h3>Share your thoughts</h3>
   
@@ -176,6 +182,8 @@
   <p class="comment-privacy-note">Comments are private&mdash;unless pinned by me.</p>
   </form>
 </div>
+    {{/if}}
+    {{/with}}
         
   </main>
 

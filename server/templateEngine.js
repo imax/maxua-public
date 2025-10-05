@@ -191,6 +191,7 @@ registerPartial('header', 'header');
 registerPartial('post-card', 'post-card');
 registerPartial('post-article', 'post-article');
 registerPartial('subscription-form', 'subscription-form');
+registerPartial('subscription-kit', 'subscription-kit'); 
 
 module.exports = {
   render,
