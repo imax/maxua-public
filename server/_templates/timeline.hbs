@@ -80,7 +80,7 @@ button.load-more {
         {{#if posts.length}}
       {{#each posts}}
 {{> post-card}}
-{{#if (eq @index 1)}}
+{{#if (eq @index -999)}}
 {{> subscription-form}}
 {{/if}}
 {{/each}}
